@@ -5,7 +5,7 @@ clear;%close;
 SN_tar  = 30;        % CDF表示のためのターゲットSNR [dB]
 %SN_max = 40;         % 最大SNR[dB]
 SIMU   = 1000;       % 伝搬チャネル行列の発生回数
-NT     = 26;          % 送信素子数
+NT     = 24;          % 送信素子数
 NR     = 3;          % 受信素子数(=2に固定)
 NU     = 8;          % ユーザ数
 I      = eye(NT,NT); % NTxNTの単位行列
