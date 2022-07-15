@@ -16,9 +16,9 @@ testfile3 = 'CSV/OSINR_16x2x8_BD_2BMSNs_MMSE.csv';
 %SN_tar  = 30;        % CDF表示のためのターゲットSNR [dB]
 SN_min = 0;
 SN_max = 30;         % 最大SNR[dB]
-Ntri   = 10;       % 伝搬チャネル行列の発生回数 (通常は1000)
-NT     = 16;          % 送信素子数
-NR     = 2;          % 受信素子数
+Ntri   = 100;       % 伝搬チャネル行列の発生回数 (通常は1000)
+NT     = 24;          % 送信素子数
+NR     = 3;          % 受信素子数
 NU     = 8;          % ユーザ数 (=2に固定)
 I      = eye(NT,NT); % NTxNTの単位行列
 
@@ -87,16 +87,16 @@ for isnr=1:LSNR
         [W_MMSE,U_MMSE,S_MMSE,RIP_MMSE,SP_MMSE] = mmse(NT,NR,NU,H0,a); % function, mmse.m を使用
         
         for nuser = 1 : NU
-            SP_BD_USER(nuser) = sum(SP_BD(:,nuser))/(NR*NT*sigma2);
-            SP_ZF_USER(nuser) = sum(SP_ZF(:,nuser))/(NR*NT*sigma2);
-            SP_BMSN_BF_USER(nuser) = sum(SP_BMSN_BF(:,nuser))/(NR*NT*sigma2);
-            SP_BMSN_GE_USER(nuser) = sum(SP_BMSN_GE(:,nuser))/(NR*NT*sigma2);
-            SP_MMSE_USER(nuser) = sum(SP_MMSE(:,nuser))/(NR*NT*sigma2);
-            RIP_BD_USER(nuser) = sum(RIP_BD(:,nuser))/(NR*NT*sigma2);
-            RIP_ZF_USER(nuser) = sum(RIP_ZF(:,nuser))/(NR*NT*sigma2);
-            RIP_BMSN_BF_USER(nuser) = sum(RIP_BMSN_BF(:,nuser))/(NR*NT*sigma2);
-            RIP_BMSN_GE_USER(nuser) = sum(RIP_BMSN_GE(:,nuser))/(NR*NT*sigma2);
-            RIP_MMSE_USER(nuser) = sum(RIP_MMSE(:,nuser))/(NR*NT*sigma2);
+            SP_BD_USER(nuser) = sum(SP_BD(:,nuser))/(NT*sigma2);
+            SP_ZF_USER(nuser) = sum(SP_ZF(:,nuser))/(NT*sigma2);
+            SP_BMSN_BF_USER(nuser) = sum(SP_BMSN_BF(:,nuser))/(NT*sigma2);
+            SP_BMSN_GE_USER(nuser) = sum(SP_BMSN_GE(:,nuser))/(NT*sigma2);
+            SP_MMSE_USER(nuser) = sum(SP_MMSE(:,nuser))/(NT*sigma2);
+            RIP_BD_USER(nuser) = sum(RIP_BD(:,nuser))/(NT*sigma2);
+            RIP_ZF_USER(nuser) = sum(RIP_ZF(:,nuser))/(NT*sigma2);
+            RIP_BMSN_BF_USER(nuser) = sum(RIP_BMSN_BF(:,nuser))/(NT*sigma2);
+            RIP_BMSN_GE_USER(nuser) = sum(RIP_BMSN_GE(:,nuser))/(NT*sigma2);
+            RIP_MMSE_USER(nuser) = sum(RIP_MMSE(:,nuser))/(NT*sigma2);
          end
         SP_BDs(k,isnr) = mean(SP_BD_USER);
         SP_ZFs(k,isnr) = mean(SP_ZF_USER);
