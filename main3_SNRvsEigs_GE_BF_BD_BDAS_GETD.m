@@ -2,22 +2,26 @@ clear;%close;
 
 % パラメータ
 % パラメータ条件 NT >= NR*NU
-SN_tar  = 30;        % CDF表示のためのターゲットSNR [dB]
+%SN_tar  = 30;        % CDF表示のためのターゲットSNR [dB]
 %SN_max = 40;         % 最大SNR[dB]
-SIMU   = 1000;       % 伝搬チャネル行列の発生回数
+SIMU   = 100;       % 伝搬チャネル行列の発生回数
 NT     = 24;          % 送信素子数
 NR     = 3;          % 受信素子数(=2に固定)
 NU     = 8;          % ユーザ数
 I      = eye(NT,NT); % NTxNTの単位行列
 SN_min = 0;
 SN_max = 30;
-SNR=SN_min:SN_max;
+SNR=SN_min:5:SN_max;
 LSNR=length(SNR);
 
 NRs = NR-1; % Antenna Selection
-
+E_BDASms=zeros(LSNR,NRs);
+E_BDms = zeros(LSNR,NR);
+E_BMSN_GE_TDms = zeros(LSNR,NR);
+E_BMSN_BFms = zeros(LSNR,NR);
+E_BMSN_GEms = zeros(LSNR,NR);
 % 擬似雑音
-a = NT/(10^(SN_tar/10));
+%a = NT/(10^(SN_tar/10));
 %a2 = NR*NT/(10^(SN_tar/10));    % 擬似雑音 for BMSN2
         
 % 所望のチャネル行列 for BMSN
@@ -40,12 +44,13 @@ E_BD = zeros(SIMU, NR, NU);             % BDの固有値
 E_BMSN_GE_TD = zeros(SIMU, NR, NU);   % BMSN-GE-TDの固有値
 E_BMSN_BF = zeros(SIMU, NR, NU);        % BMSN-BFの固有値
 E_BMSN_GE = zeros(SIMU, NR, NU);        % BMSN-GEの固有値
-for isnr=1:LSNR
+
+
+for isnr=1:LSNR          % 試行回数のループ
     SN = SNR(isnr);
     sigma2 = 1/(10^(SN/10));
     a = sigma2*NT;
-for k = 1:SIMU              % 試行回数のループ
-
+    for k = 1:SIMU 
     H0 = squeeze(H(k,:,:)); % k番目の試行回数での伝搬チャネル行列
     
     % BD-AS algorithm
@@ -65,7 +70,7 @@ for k = 1:SIMU              % 試行回数のループ
     
     
     % ユーザ毎の固有値分布
-    
+
     for nuser=1:NU
         if NR==1
             E_BDAS(k,:,nuser) = 10*log10(S_BDAS(1,1,nuser).^2/(NT*sigma2));
@@ -81,38 +86,43 @@ for k = 1:SIMU              % 試行回数のループ
             E_BMSN_GE(k,:,nuser) = 10*log10((diag(S_BMSN_GE(:,:,nuser)).^2)./(RIPGE(:,nuser)+NT*sigma2));
         end
     end
-    for nuser=1:NU
-    E_BDAS(:,:,nuser) = sort(E_BDAS(:,:,nuser),1);
-    E_BD(:,:,nuser) = sort(E_BD(:,:,nuser),1);
-    E_BMSN_GE_TD(:,:,nuser) = sort(E_BMSN_GE_TD(:,:,nuser),1);
-    E_BMSN_BF(:,:,nuser) = sort(E_BMSN_BF(:,:,nuser),1);
-    E_BMSN_GE(:,:,nuser) = sort(E_BMSN_GE(:,:,nuser),1);
+
     end
-% ユーザ平均
+
+    % ユーザ平均
 E_BDASm = mean(E_BDAS,3);
 E_BDm = mean(E_BD,3);
 E_BMSN_GE_TDm = mean(E_BMSN_GE_TD,3);
 E_BMSN_BFm = mean(E_BMSN_BF,3);
 E_BMSN_GEm = mean(E_BMSN_GE,3);
-%
-    
+
+E_BDASms(isnr,:) = mean(E_BDASm,1);
+E_BDms(isnr,:) = mean(E_BDm,1);
+E_BMSN_GE_TDms(isnr,:) = mean(E_BMSN_GE_TDm,1);
+E_BMSN_BFms(isnr,:) = mean(E_BMSN_BFm,1);
+E_BMSN_GEms(isnr,:) = mean(E_BMSN_GEm,1);
+
+fprintf('SNR = %d dB\n',SNR(isnr));    
 end
-end
+
+
+
+
 
 % CDF of Eigenvalue at Target SNR
 rr2(:,1) = (1/SIMU:1/SIMU:1).'*100; 
 Y = rr2;
-rr3 = zeros(SIMU,NR*5);
+rr3 = zeros(LSNR,NR*5);
 
 
 for nn=1:NR
-    rr3(:,nn) = E_BMSN_BFm(:,nn);
-    rr3(:,nn+NR) = E_BMSN_GEm(:,nn);
-    rr3(:,nn+2*NR) = E_BMSN_GE_TDm(:,nn);
-    rr3(:,nn+3*NR) = E_BDm(:,nn);
+    rr3(:,nn) = E_BMSN_BFms(:,nn);
+    rr3(:,nn+NR) = E_BMSN_GEms(:,nn);
+    rr3(:,nn+2*NR) = E_BMSN_GE_TDms(:,nn);
+    rr3(:,nn+3*NR) = E_BDms(:,nn);
 end
-    rr3(:,13) = E_BDASm(:,1);
-    rr3(:,14) = E_BDASm(:,2);
+    rr3(:,13) = E_BDASms(:,1);
+    rr3(:,14) = E_BDASms(:,2);
  
 
 
@@ -131,20 +141,20 @@ hold on;
 set(gca,'XTick',Holizon_min-5:5:Holizon_max+5,'Fontsize',14,'Fontname','Arial')
 xlabel('SINR of eigenvalue [dB]','Fontsize',16,'Fontname','Arial');
 ylabel('CDF [%]','Fontsize',16,'Fontname','Arial');
-plot(SNR,rr3(:,1),'r-d','MarkerIndices',10:100:length(Y),'Linewidth',2);
-plot(SNR,rr3(:,2),'r--d','MarkerIndices',50:100:length(Y),'Linewidth',2);
-plot(SNR,rr3(:,3),'r-.d','MarkerIndices',50:100:length(Y),'Linewidth',2);
-plot(SNR,rr3(:,4),'b-s','MarkerIndices',10:100:length(Y),'Linewidth',2);
-plot(SNR,rr3(:,5),'b--s','MarkerIndices',50:100:length(Y),'Linewidth',2);
-plot(SNR,rr3(:,6),'b-.s','MarkerIndices',50:100:length(Y),'Linewidth',2);
-plot(SNR,rr3(:,7),'g-o','MarkerIndices',10:100:length(Y),'Linewidth',2);
-plot(SNR,rr3(:,8),'g--o','MarkerIndices',50:100:length(Y),'Linewidth',2);
-% plot(rr3(:,9),Y,'g-.o','MarkerIndices',50:100:length(Y),'Linewidth',2);
-plot(SNR,rr3(:,10),'c-x','MarkerIndices',10:100:length(Y),'Linewidth',2);
-plot(SNR,rr3(:,11),'c--x','MarkerIndices',50:100:length(Y),'Linewidth',2);
-plot(SNR,rr3(:,12),'c-.x','MarkerIndices',50:100:length(Y),'Linewidth',2);
-plot(SNR,rr3(:,13),'k-<','MarkerIndices',10:100:length(Y),'Linewidth',2);
-plot(SNR,rr3(:,14),'k--<','MarkerIndices',10:100:length(Y),'Linewidth',2);
+plot(SNR,rr3(:,1),'r-d','Linewidth',2);
+plot(SNR,rr3(:,2),'r--d','Linewidth',2);
+plot(SNR,rr3(:,3),'r-.d','Linewidth',2);
+plot(SNR,rr3(:,4),'b-s','Linewidth',2);
+plot(SNR,rr3(:,5),'b--s','Linewidth',2);
+plot(SNR,rr3(:,6),'b-.s','Linewidth',2);
+plot(SNR,rr3(:,7),'g-o','Linewidth',2);
+plot(SNR,rr3(:,8),'g--o','Linewidth',2);
+% plot(rr3(:,9),Y,'g-.o',50:100:length(Y),'Linewidth',2);
+plot(SNR,rr3(:,10),'c-x','Linewidth',2);
+plot(SNR,rr3(:,11),'c--x','Linewidth',2);
+plot(SNR,rr3(:,12),'c-.x','Linewidth',2);
+plot(SNR,rr3(:,13),'k-<','Linewidth',2);
+plot(SNR,rr3(:,14),'k--<','Linewidth',2);
 %plot(rr3(:,6),rr3(:,4),'m');
 legend('BMSN-BF \lambda_1','BMSN-BF \lambda_2','BMSN-BF \lambda_3',...
     'BMSN-GE \lambda_1','BMSN-GE \lambda_2','BMSN-GE \lambda_3',...
@@ -152,7 +162,7 @@ legend('BMSN-BF \lambda_1','BMSN-BF \lambda_2','BMSN-BF \lambda_3',...
     'BD \lambda_1','BD \lambda_2','BD \lambda_3',...
     'BD-AS \lambda_1','BD-AS \lambda_2',...
     'Location','southeast');
-title(target_snr);
+%title(target_snr);
 
 
 
