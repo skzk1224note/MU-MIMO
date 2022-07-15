@@ -139,8 +139,9 @@ axis([0 30 Holizon_min Holizon_max]);
 grid on;
 hold on;
 set(gca,'XTick',Holizon_min-5:5:Holizon_max+5,'Fontsize',14,'Fontname','Arial')
-xlabel('SINR of eigenvalue [dB]','Fontsize',16,'Fontname','Arial');
-ylabel('CDF [%]','Fontsize',16,'Fontname','Arial');
+xticks([0 5 10 15 20 25 30])
+xlabel('SNR[dB]','Fontsize',16,'Fontname','Arial');
+ylabel('SINR of eigenvalue [dB]','Fontsize',16,'Fontname','Arial');
 plot(SNR,rr3(:,1),'r-d','Linewidth',2);
 plot(SNR,rr3(:,2),'r--d','Linewidth',2);
 plot(SNR,rr3(:,3),'r-.d','Linewidth',2);
