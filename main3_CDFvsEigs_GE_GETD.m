@@ -2,7 +2,7 @@ clear;%close;
 
 % パラメータ
 % パラメータ条件 NT >= NR*NU
-SN_tar  = 10;        % CDF表示のためのターゲットSNR [dB]
+SN_tar  = 30;        % CDF表示のためのターゲットSNR [dB]
 %SN_max = 40;         % 最大SNR[dB]
 SIMU   = 100;       % 伝搬チャネル行列の発生回数
 NT     = 24;          % 送信素子数
@@ -112,7 +112,7 @@ mycol = [1 0 1;1 0 1;0 0 0;0 0 0;
       1 0 0;1 0 0;
       0 0 0;0 0 0];
 set(groot,'defaultAxesColorOrder',mycol)
-Holizon_min = round(min(min(rr3(:,10))))-2;
+Holizon_min = round(min(min(rr3(:,6))))-2;
 Holizon_max = round(max(max(rr3)))+2;
 axis([Holizon_min-10 Holizon_max 0 100]);
 grid on;
@@ -130,7 +130,7 @@ plot(rr3(:,7),Y,'g-o','MarkerIndices',10:100:length(Y),'Linewidth',2);
 plot(rr3(:,8),Y,'g--o','MarkerIndices',50:100:length(Y),'Linewidth',2);
 % plot(rr3(:,9),Y,'g-.o','MarkerIndices',50:100:length(Y),'Linewidth',2);
 plot(rr3(:,10),Y,'c-x','MarkerIndices',10:100:length(Y),'Linewidth',2);
-plot(rr3(:,11),Y,'c--x','MarkerIndices',50:100:length(Y),'Linewidth',2);
+%plot(rr3(:,11),Y,'c--x','MarkerIndices',50:100:length(Y),'Linewidth',2);
 %plot(rr3(:,12),Y,'c-.x','MarkerIndices',50:100:length(Y),'Linewidth',2);
 plot(rr3(:,13),Y,'k-<','MarkerIndices',10:100:length(Y),'Linewidth',2);
 plot(rr3(:,14),Y,'k--<','MarkerIndices',10:100:length(Y),'Linewidth',2);
@@ -138,7 +138,7 @@ plot(rr3(:,14),Y,'k--<','MarkerIndices',10:100:length(Y),'Linewidth',2);
 legend('getd-1-2-2 \lambda_1','getd-1-2-2 \lambda_2',...
     'BMSN-GE \lambda_1','BMSN-GE \lambda_2','BMSN-GE \lambda_3',...
     'getd-1-1-2 \lambda_1','getd-1-1-2 \lambda_2',...
-    'getd-1-1-1 \lambda_1','getd-1-1-1 \lambda_2',...
+    'getd-1-1-1 \lambda_1',...
     'BD-AS \lambda_1','BD-AS \lambda_2',...
     'Location','southeast');
 title(target_snr);
